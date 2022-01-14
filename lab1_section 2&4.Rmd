@@ -1,0 +1,59 @@
+---
+title: "Lab 1"
+author: "Tingyu Zou"
+date: "1/12/2022"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+```{r}
+library(tidyverse)
+library(dplyr)
+library(tidytext)
+```
+
+```{r data}
+rstats_tweets <- readRDS("C:/Users/zty/OneDrive - University Of Oregon/Desktop/coursework/EDLD 652 data visualization/EDLD652 class/course repo/c2-dataviz-2022/data/rstats_tweets.rds")
+```
+
+
+```{r Look-for-“plot”}
+data2 <- rstats_tweets %>%
+  mutate(LFplot = str_detect(text,"plot")) 
+data2$LFplot %>% 
+  mean()
+```
+
+
+
+```{r }
+text <- select(rstats_tweets, text)
+text_tidy_words <- text %>% 
+  unnest_tokens(word, text)
+
+```
+
+
+```{r}
+TTW <- text_tidy_words %>% 
+  anti_join(stop_words) %>%
+  filter(word != "t.co",
+         word != "https",
+         word != "http",
+         word != "rt", 
+         word != "rstats") %>% 
+  count(word, sort = TRUE) 
+```
+
+
+```{r}
+TTW %>% 
+    mutate(word= reorder(word, n)) %>%
+    slice(1:15) %>% 
+    ggplot(aes(n, word)) +
+    geom_col(fill = "cornflowerblue")+
+    theme_minimal()
+
+```
+
