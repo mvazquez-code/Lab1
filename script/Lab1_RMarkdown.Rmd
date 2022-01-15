@@ -1,0 +1,69 @@
+---
+title: "Lab 1 R Markdown"
+author: "Manuel Vazquez"
+date: "1/10/2022"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library("here")
+library("rio")
+library("tidyverse")
+library("ggpubr")
+```
+
+# 1. Initial Exploration
+
+```{r }
+# import the data
+data <- import(here("data","rstats_tweets.rds"))
+```
+
+## Create histograms
+
+I believe the histogram with 50 bins provides the best representation of the data. It communicates a similar distribution compared to the other histograms with more granual bins (bins of 100 and 150) while still easy to read. 
+
+```{r }
+
+hist1 <- data %>%
+ggplot (aes(display_text_width)) +
+  geom_histogram(fill = "blue",
+                 color = "white",
+                 alpha = 0.6,
+                 bins = 10) +
+  labs(title="Bins = 10") +
+  theme_minimal()
+
+hist2 <- data %>%
+ggplot (aes(display_text_width)) +
+  geom_histogram(fill = "blue",
+                 color = "white",
+                 alpha = 0.6,
+                 bins = 50) +
+  labs(title = "Bins = 50") +
+  theme_minimal()
+
+hist3 <- data %>%
+ggplot (aes(display_text_width)) +
+  geom_histogram(fill = "blue",
+                 color = "white",
+                 alpha = 0.8,
+                 bins = 100) +
+  labs(title = "Bins = 100") +
+  theme_minimal()
+
+hist4 <- data %>%
+ggplot (aes(display_text_width)) +
+  geom_histogram(fill = "blue",
+                 color = "white",
+                 alpha = 1.2,
+                 bins = 150) +
+  labs(title = "Bins = 150") +
+  theme_minimal() 
+
+ggarrange(hist1, hist2, hist3, hist4 )
+```
