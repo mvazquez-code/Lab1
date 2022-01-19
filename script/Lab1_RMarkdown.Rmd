@@ -1,7 +1,7 @@
 ---
 title: "Lab 1 R Markdown"
-author: "Manuel Vazquez"
-date: "1/10/2022"
+author: "Manuel Vazquez, Tingyu Zou, Errol Kaylor"
+date: "1/19/2022"
 output:
   html_document: default
   pdf_document: default
@@ -14,6 +14,8 @@ library("here")
 library("rio")
 library("tidyverse")
 library("ggpubr")
+library("dplyr")
+library("tidytext")
 ```
 
 # 1. Initial Exploration
@@ -66,4 +68,52 @@ ggplot (aes(display_text_width)) +
   theme_minimal() 
 
 ggarrange(hist1, hist2, hist3, hist4 )
+```
+
+```{r Look-for-“plot”}
+data2 <- data %>%
+  mutate(LFplot = str_detect(text,"plot")) 
+data2$LFplot %>% 
+  mean()
+```
+
+
+
+```{r }
+text <- select(data, text)
+text_tidy_words <- text %>% 
+  unnest_tokens(word, text)
+
+```
+
+```{r}
+TTW <- text_tidy_words %>% 
+  anti_join(stop_words) %>%
+  filter(word != "t.co",
+         word != "https",
+         word != "http",
+         word != "rt", 
+         word != "rstats") %>% 
+  count(word, sort = TRUE) 
+
+TTW %>% 
+  mutate(word = reorder(word,n)) %>% 
+  slice(1:15) %>% 
+  ggplot(aes(n,word))+
+  geom_col()+
+  theme_minimal()
+```
+
+
+```{r}
+TTW %>% 
+  mutate(word= reorder(word, n)) %>%
+  slice(1:15) %>% 
+  ggplot(aes(n, word)) +
+  geom_col(fill = "cornflowerblue")+
+  theme_minimal()+
+  labs(title ="Word frequencies in posts", subtitle = "Top 15 words displayed", caption = "Data from Mike Kearny, distributed via #tidytuesday")+
+  xlab("Count Across All Posts")+
+  ylab("Word")
+
 ```
